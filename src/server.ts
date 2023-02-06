@@ -1,5 +1,9 @@
+
 import express from 'express'
+import { connectToDatabase } from './database'
 import { routes } from './routes'
+
+connectToDatabase()
 
 const app = express()
 
