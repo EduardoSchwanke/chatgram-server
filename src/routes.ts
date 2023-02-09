@@ -62,25 +62,29 @@ routes.post('/signup', async (request, response) => {
 routes.post('/login', async (request, response) => {
 
     const FormData = z.object({
-        username: z.string(),
+        name: z.string(),
         password: z.string()
     })
 
-    const { username, password } = FormData.parse(request.body)
+    const { name, password } = FormData.parse(request.body)
 
     try {
         const user = await Auth.findOne({ 
-            username: username, 
+            username: name, 
             password: password 
         })
         if(user){
             return response.status(201).json( user ) 
         }else{
             const user = await Auth.findOne({ 
-                userUniqueName: username, 
+                userUniqueName: name, 
                 password: password 
             })
-            return response.status(201).json( user ) 
+            if(user){
+                return response.status(201).json( user ) 
+            }else{
+                return response.status(400).json({ error: 'error'})
+            }
         }
     }catch(err){
         return response.status(400).json({ error: 'error'})
