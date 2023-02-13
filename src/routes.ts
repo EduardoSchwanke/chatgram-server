@@ -5,10 +5,11 @@ const Auth = require('./models/Auth')
 
 export const routes = express.Router()
 
-routes.get('/', async (request, response) => {
+routes.get('/:id', async (request, response) => {
+    const id = request.params.id
     try{
-        const Users = await Auth.find()
-        return response.status(201).json( Users )
+        const User = await Auth.findOne({_id: id})
+        return response.status(201).json( User )
     }catch(err){
         return response.status(400).json({ error: 'error'})
     }
