@@ -53,8 +53,11 @@ routes.post('/signup', async (request, response) => {
     })
 
     try {
+        if(await Auth.findOne({userUniqueName: userUniqueName})){
+            return response.status(400).json({ error: 'error'})
+        }
         await auth.save()
-        return response.status(201).json({ message: 'user created with sucefully!' })
+        return response.status(201).json( auth )
     }catch(err){
         return response.status(400).json({ error: 'error'})
     }
