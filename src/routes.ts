@@ -94,3 +94,20 @@ routes.post('/login', async (request, response) => {
         return response.status(400).json({ error: 'error'})
     }
 })
+
+routes.put('/:id', async (request, response) => {
+    const id  = request.params.id
+    const { username, userUniqueName, password } = request.body
+
+    try {
+        const user = await Auth.findById(id)
+        await user.update({
+            username: username,
+            userUniqueName: userUniqueName,
+            password: password
+        })
+        return response.status(201).json({ message: 'user update with sucefully' }) 
+    }catch(err){
+        return response.status(400).json({ error: 'error'})
+    }
+})
