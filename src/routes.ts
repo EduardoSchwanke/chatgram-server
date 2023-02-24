@@ -2,6 +2,7 @@ import express from 'express'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 const Auth = require('./models/Auth')
+const Chat = require('./models/Chat')
 
 export const routes = express.Router()
 
@@ -111,3 +112,43 @@ routes.put('/:id', async (request, response) => {
         return response.status(400).json({ error: 'error'})
     }
 })
+
+routes.post('/chat', async (request, response) => {
+    const { one, two, chatRoom } = request.body
+
+    try{
+        if(!await Chat.findOne({userOne: one, UserTwo: two})){
+            const chat = new Chat({
+                userOne: one,
+                UserTwo: two,
+                chatRoom: [chatRoom[0], chatRoom[1]]
+            })
+            await chat.save()
+            return response.status(201).json(chat)
+        }else{
+            const findChat = await Chat.findOne({
+                userOne: one,
+                UserTwo: two
+            })
+            await findChat.updateOne({$push: {'chatRoom' : chatRoom}})
+            return response.status(201).json(findChat)
+        }
+    }catch(err){
+        return response.status(400).json({ error: 'error'})
+    }
+})
+
+routes.post('/chatConversation', async (request, response) => {
+    const {one, two} = request.body
+
+    try{
+        const findChat = await Chat.findOne({
+            userOne: one,
+            UserTwo: two
+        })
+        return response.status(201).json(findChat.chatRoom)
+    }catch(err){
+        return response.status(400).json({ error: 'error'})
+    }
+})
+
