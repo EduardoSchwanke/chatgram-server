@@ -11,7 +11,7 @@ const chatSchema = new mongoose.Schema(
             required: true
         },
         chatRoom: {
-            type: {},
+            type: [[]],
             required: true,
         },
     }

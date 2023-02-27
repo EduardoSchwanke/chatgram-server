@@ -138,7 +138,7 @@ routes.post('/chat', async (request, response) => {
     }
 })
 
-routes.post('/chatConversation', async (request, response) => {
+/*routes.post('/chatConversation', async (request, response) => {
     const {one, two} = request.body
 
     try{
@@ -150,5 +150,20 @@ routes.post('/chatConversation', async (request, response) => {
     }catch(err){
         return response.status(400).json({ error: 'error'})
     }
-})
+})*/
 
+routes.post('/chatConversation', async (request, response) => {
+    const { one } = request.body
+
+    try{
+        const findChat = await Chat.find({userOne: one})
+        if(findChat.length > 0){
+            return response.status(201).json(findChat)
+        }else{
+            const findChat = await Chat.find({UserTwo: one})
+            return response.status(201).json(findChat)
+        }
+    }catch(err){
+        return response.status(400).json({ error: 'error'})
+    }
+})
