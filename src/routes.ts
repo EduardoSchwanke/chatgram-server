@@ -117,7 +117,11 @@ routes.post('/chat', async (request, response) => {
     const { one, two, chatRoom } = request.body
 
     try{
-        if(!await Chat.findOne({userOne: one, UserTwo: two})){
+        const findChat = await Chat.find({userOne: one, UserTwo: two})
+        const findChatTwo = await Chat.find({UserTwo: one, userOne: two})
+        
+        if(findChat.length <= 0 && findChatTwo <= 0){
+            console.log(findChat, findChatTwo)
             const chat = new Chat({
                 userOne: one,
                 UserTwo: two,
@@ -126,12 +130,14 @@ routes.post('/chat', async (request, response) => {
             await chat.save()
             return response.status(201).json(chat)
         }else{
-            const findChat = await Chat.findOne({
-                userOne: one,
-                UserTwo: two
-            })
-            await findChat.updateOne({$push: {'chatRoom' : chatRoom}})
-            return response.status(201).json(findChat)
+            if(findChat.length > 0){
+                await findChat[0].updateOne({$push: {'chatRoom' : chatRoom}})
+                return response.status(201).json(findChat)
+            }else{
+                console.log('else')
+                await findChatTwo[0].updateOne({$push: {'chatRoom' : chatRoom}})
+                return response.status(201).json(findChatTwo)
+            }
         }
     }catch(err){
         return response.status(400).json({ error: 'error'})
@@ -156,13 +162,8 @@ routes.post('/chatConversation', async (request, response) => {
     const { one } = request.body
 
     try{
-        const findChat = await Chat.find({userOne: one})
-        if(findChat.length > 0){
-            return response.status(201).json(findChat)
-        }else{
-            const findChat = await Chat.find({UserTwo: one})
-            return response.status(201).json(findChat)
-        }
+        const findChat = await Chat.find({$or: [{userOne: one}, {UserTwo: one}]})
+        return response.status(201).json(findChat)
     }catch(err){
         return response.status(400).json({ error: 'error'})
     }
