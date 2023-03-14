@@ -3,11 +3,11 @@ import mongoose from "mongoose";
 const chatSchema = new mongoose.Schema(
     {
         userOne: {
-            type: String,
+            type: [],
             required: true
         },
-        UserTwo: {
-            type: String,
+        userTwo: {
+            type: [],
             required: true
         },
         chatRoom: {
