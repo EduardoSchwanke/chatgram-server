@@ -3,15 +3,15 @@ import mongoose from "mongoose";
 const chatSchema = new mongoose.Schema(
     {
         userOne: {
-            type: [],
+            type: String,
             required: true
         },
         userTwo: {
-            type: [],
+            type: String,
             required: true
         },
         chatRoom: {
-            type: [[]],
+            type: [[String, String]],
             required: true,
         },
     }

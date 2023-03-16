@@ -118,7 +118,7 @@ routes.put('/:id', async (request, response) => {
 
 // Rotas de conversa
 
-routes.post('/chat', async (request, response) => {
+/*routes.post('/chat', async (request, response) => {
     const { userOne, userTwo, chatRoom } = request.body
 
     try{
@@ -145,6 +145,48 @@ routes.post('/chat', async (request, response) => {
         }
     }catch(err){
         return response.status(400).json({ error: 'error'})
+    }
+})
+
+routes.post('/chatConversationAll', async (request, response) => {
+    const { userOne } = request.body
+
+    try{
+        const findChat = await Chat.find({$or: [{userOne: userOne}, {userTwo: userOne}]})
+        return response.status(201).json(findChat)
+    }catch(err){
+        return response.status(400).json({ error: 'error'})
+    }
+})*/
+
+
+routes.post('/createChat', async (req, res) => {
+    const { userOne, userTwo, chatRoom } = req.body
+
+    try{
+        const findChat = await Chat.find({userOne: userOne, userTwo: userTwo})
+        const findChatTwo = await Chat.find({userTwo: userOne, userOne: userTwo})
+        
+        if(findChat.length <= 0 && findChatTwo.length <= 0){
+            
+            const chat = new Chat({
+                userOne: userOne,
+                userTwo: userTwo,
+                chatRoom: [chatRoom[0], chatRoom[1]]
+            })
+            await chat.save()
+            return res.status(201).json(chat)
+        }else{
+            if(findChat.length > 0){
+                await findChat[0].updateOne({$push: {'chatRoom' : chatRoom}})
+                return res.status(201).json(chatRoom)
+            }else{
+                await findChatTwo[0].updateOne({$push: {'chatRoom' : chatRoom}})
+                return res.status(201).json(findChatTwo)
+            }
+        }
+    }catch(err){
+        return res.status(400).json({ error: 'error'})
     }
 })
 
